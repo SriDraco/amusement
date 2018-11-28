@@ -252,7 +252,7 @@ SubDSphere::Draw(GLfloat trans[3], GLfloat rot[3], GLfloat angle, const bool smo
 	unsigned int    i, j;
 
 	glTranslatef(trans[0], trans[1], trans[2]);
-	glRotatef(angle, rot[0], rot[1], rot[2]);
+
 	glBegin(GL_TRIANGLES);
 	for (i = 0; i < num_faces; i++)
 	{
@@ -298,5 +298,6 @@ SubDSphere::Draw(GLfloat trans[3], GLfloat rot[3], GLfloat angle, const bool smo
 			glVertex3fv(vertices[c].x);
 		}
 	}
+
 	glEnd();
 }

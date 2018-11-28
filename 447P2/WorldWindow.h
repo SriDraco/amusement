@@ -17,6 +17,7 @@
 #include "Track.h"
 #include "Buildings.h"
 #include "SubDSphere.h"
+#include "FerrisWheel.h"
 
 // Subclass the Fl_Gl_Window because we want to draw OpenGL in here.
 class WorldWindow : public Fl_Gl_Window {
@@ -42,6 +43,7 @@ private:
 	Buildings	building;	// The buildings in the world
 	SubDSphere	sphere;		// Subdivided sphere (from site example)
 	bool		smooth;		// Is the sphere smooth?
+	FerrisWheel FWheel;		// Ferris Wheel
 
 	static const double FOV_X; // The horizontal field of view.
 

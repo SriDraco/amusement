@@ -118,6 +118,7 @@ Track::Initialize(void)
 	// x-axis will be aligned to point along the track. The origin of the
 	// train is assumed to be at the bottom of the train.
 	// Now do the geometry. Create the display list.
+	bumper.Initialize();
 	// Load the image for the texture. The texture file has to be in
 	// a place where it will be found.
 	if (!(image_data = (ubyte*)tga_load("railFront.tga", &image_width, &image_height, TGA_TRUECOLOR_24)))
@@ -172,6 +173,7 @@ Track::Initialize(void)
 	glVertex3f(-1.5f, -0.5f, 0.0f);
 	glVertex3f(-1.5f, -0.5f, 1.0f);
 	glEnd();
+	
 	//Load top texture
 	if (!(image_data = (ubyte*)tga_load("railTop.tga", &image_width, &image_height, TGA_TRUECOLOR_24)))
 	{
@@ -261,9 +263,12 @@ Track::Initialize(void)
 	glVertex3f(-1.5f, -0.5f, 0.0f);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+	//Attach bumper?
+	GLfloat posn[3];
+	posn[0] = 1.5f;
+	posn[1] = posn[2] = 0.0f;
+	bumper.Draw(posn);
 	glEndList();
-
-	bumper.Initialize();
 
 	initialized = true;
 
@@ -278,7 +283,7 @@ Track::Draw(void)
 	float   posn[3];
 	float   tangent[3];
 	double  angle;
-
+	
 	if (!initialized)
 		return;
 
@@ -301,14 +306,7 @@ Track::Draw(void)
 
 	// Rotate it to point along the track, but stay horizontal
 	angle = atan2(tangent[1], tangent[0]) * 180.0 / M_PI;
-	GLfloat rot[3];
-	rot[0] = 0;
-	rot[1] = 0;
-	rot[2] = 1;
-	glRotatef((float)angle, rot[0], rot[1], rot[2]);
-
-	// Move bumper
-	bumper.Draw(posn, rot, angle, false);
+	glRotatef((float)angle, 0.0f, 0.0f, 1.0f);
 
 	// Another rotation to get the tilt right.
 	angle = asin(-tangent[2]) * 180.0 / M_PI;
@@ -319,6 +317,7 @@ Track::Draw(void)
 
 	glPopMatrix();
 	glPopMatrix();
+
 }
 
 
