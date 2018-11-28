@@ -374,7 +374,7 @@ Track::Ride() {
 	// Look at the right place. (next point on track + up a little bit)
 	cameraLookAt[0] = trainPosn[0] + tangent[0];
 	cameraLookAt[1] = trainPosn[1] + tangent[1];
-	cameraLookAt[2] = trainPosn[2] + tangent[2] + 2.5;
+	cameraLookAt[2] = trainPosn[2] + tangent[2];
 
 	// Update camera
 	glMatrixMode(GL_MODELVIEW);

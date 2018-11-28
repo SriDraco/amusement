@@ -112,10 +112,10 @@ WorldWindow::draw(void)
 		eye[0] = x_at + dist * cos(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
 		eye[1] = y_at + dist * sin(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
 		eye[2] = 2.0 + dist * sin(phi * M_PI / 180.0);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(eye[0], eye[1], eye[2], x_at, y_at, 2.0, 0.0, 0.0, 1.0);
 	}
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(eye[0], eye[1], eye[2], x_at, y_at, 2.0, 0.0, 0.0, 1.0);
 	// Position the light source. This has to happen after the viewing
 	// transformation is set up, so that the light stays fixed in world
 	// space. This is a directional light - note the 0 in the w component.
