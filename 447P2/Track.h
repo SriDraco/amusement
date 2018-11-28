@@ -10,6 +10,7 @@
 
 #include <FL/gl.H>
 #include "CubicBspline.h"
+#include "SubDSphere.h"
 
 class Track {
 private:
@@ -17,6 +18,7 @@ private:
 	GLubyte			train_list;		// The display list for the train.
 	bool			initialized;    // Whether or not we have been initialized.
 	CubicBspline	*track;			// The spline that defines the track.
+	SubDSphere		bumper;			// Subdivided bumper for the car
 	float			posn_on_track;	// The train's parametric position on the track.
 	float			speed;			// The train's speed, in world coordinates
 	GLuint			texture_obj_top;// Texture object for top of train

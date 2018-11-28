@@ -6,7 +6,7 @@
 
 
 #include "SubDSphere.h"
-#include <Fl/gl.h>
+//moved to ^ #include <Fl/gl.h>
 #include <stdlib.h>
 
 
@@ -246,13 +246,13 @@ SubDSphere::Subdivide(unsigned int n)
 
 
 void
-SubDSphere::Draw(const bool smooth)
+SubDSphere::Draw(GLfloat trans[3], GLfloat rot[3], GLfloat angle, const bool smooth)
 {
 	double  	    l;
 	unsigned int    i, j;
 
-	glTranslatef(5.5f, 5.0f, 1.0f);
-
+	glTranslatef(trans[0], trans[1], trans[2]);
+	glRotatef(angle, rot[0], rot[1], rot[2]);
 	glBegin(GL_TRIANGLES);
 	for (i = 0; i < num_faces; i++)
 	{

@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <FL/gl.h>
 
 typedef struct _Vertex {
     float   	    x[3];
@@ -27,7 +28,6 @@ typedef struct _Triangle {
     bool            forward[3];
     } Triangle, *TrianglePtr;
 
-
 class SubDSphere {
 private:
 	unsigned int    num_vertices;
@@ -44,7 +44,8 @@ public:
 
 	void    Subdivide(unsigned int);
 
-	void    Draw(const bool smooth = true);
+	void    Draw(GLfloat trans[3] = { 0 }, GLfloat rot[3] = { 0 },
+				 GLfloat angle = 0.0f, const bool smooth = true);
 };
 
 #endif
