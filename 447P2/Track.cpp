@@ -11,6 +11,7 @@
 #include <FL/math.H>
 #include <FL/glu.h>
 #include "libtarga.h"
+#include "SubDSphere.h"
 
 
 
@@ -59,6 +60,7 @@ Track::Initialize(void)
 	int		    i;
 	ubyte   *image_data;
 	int	    image_height, image_width;
+	
 
 	// Create the track and rail splines.
 	track = new CubicBspline(3, true);
@@ -162,6 +164,7 @@ Track::Initialize(void)
 	glVertex3f(1.5f, 0.5f, 1.0f);
 	glVertex3f(1.5f, -0.5f, 1.0f);
 	glVertex3f(1.5f, -0.5f, 0.0f);
+	
 	//Back
 	glNormal3f(-1.0f, 0.0f, 0.0f);
 	glVertex3f(-1.5f, 0.5f, 1.0f);
@@ -260,6 +263,8 @@ Track::Initialize(void)
 	glDisable(GL_TEXTURE_2D);
 	glEndList();
 
+	bumper.Initialize();
+
 	initialized = true;
 
 	return true;
@@ -296,8 +301,14 @@ Track::Draw(void)
 
 	// Rotate it to point along the track, but stay horizontal
 	angle = atan2(tangent[1], tangent[0]) * 180.0 / M_PI;
-	glRotatef((float)angle, 0.0f, 0.0f, 1.0f);
+	GLfloat rot[3];
+	rot[0] = 0;
+	rot[1] = 0;
+	rot[2] = 1;
+	glRotatef((float)angle, rot[0], rot[1], rot[2]);
 
+	// Move bumper
+	bumper.Draw(posn, rot, angle, false);
 
 	// Another rotation to get the tilt right.
 	angle = asin(-tangent[2]) * 180.0 / M_PI;
