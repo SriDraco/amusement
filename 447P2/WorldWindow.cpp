@@ -48,7 +48,7 @@ WorldWindow::draw(void)
 		// GL context is damaged.
 
 		double	fov_y;
-
+		glEnable(GL_TEXTURE_2D);
 		// Sets the clear color to sky blue.
 		glClearColor(0.53f, 0.81f, 0.92f, 1.0);
 
@@ -59,6 +59,7 @@ WorldWindow::draw(void)
 		// Turn on back face culling. Faces with normals away from the viewer
 		// will not be drawn.
 		glEnable(GL_CULL_FACE);
+	
 
 		// Enable lighting with one light.
 		glEnable(GL_LIGHT0);
@@ -93,7 +94,6 @@ WorldWindow::draw(void)
 		traintrack.Initialize();
 		sphere.Initialize();
 		building.Initialize();
-		FWheel.Initialize();
 	}
 
 	// Stuff out here relies on a coordinate system or must be done on every
@@ -128,7 +128,6 @@ WorldWindow::draw(void)
 	ground.Draw();
 	traintrack.Draw();
 	building.Draw();
-	FWheel.Draw();
 	// Build sphere args
 	GLfloat defaultTrans[3], defaultRot[3] = { 0 }, defaultAngle = 0.0f;
 	defaultTrans[0] = 5.5f;
