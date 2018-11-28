@@ -94,6 +94,7 @@ WorldWindow::draw(void)
 		traintrack.Initialize();
 		sphere.Initialize();
 		building.Initialize();
+		FWheel.Initialize();
 	}
 
 	// Stuff out here relies on a coordinate system or must be done on every
@@ -128,6 +129,7 @@ WorldWindow::draw(void)
 	ground.Draw();
 	traintrack.Draw();
 	building.Draw();
+	FWheel.Draw();
 	// Build sphere args
 	GLfloat defaultTrans[3], defaultRot[3] = { 0 }, defaultAngle = 0.0f;
 	defaultTrans[0] = 5.5f;
