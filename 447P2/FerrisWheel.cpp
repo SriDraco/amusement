@@ -43,7 +43,8 @@ FerrisWheel::Draw() {
 	gluQuadricNormals(quadric, GLU_SMOOTH);
 
 	glPushMatrix();
-
+	glScalef(.3, .3, .3);
+	glTranslatef(0, 0, 50);
 	// initialise lights
 	GLfloat light_post1[] = { 0.0,50.0,0.0,1.0 }, 
 		    whiteSpecularLight[] = { 0.5, 0.5, 0.5 }, blackAmbientLight[] = { 0.3, 0.3, 0.3 }, 
@@ -55,7 +56,7 @@ FerrisWheel::Draw() {
 	glLightfv(GL_LIGHT1, GL_AMBIENT, blackAmbientLight);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, whiteDiffuseLight);
 	glLightfv(GL_LIGHT1, GL_POSITION, light_post1);
-
+	glRotatef(90, 1, 1, 0);
 	// Start the ring
 	twoModel[0] = GL_FALSE;
 	glLightModelfv(GL_LIGHT_MODEL_TWO_SIDE, twoModel);
@@ -174,4 +175,9 @@ FerrisWheel::drawWagons()
 	glDisable(GL_LIGHTING);
 	glDisable(GL_NORMALIZE);
 	glPopMatrix();
+}
+void
+FerrisWheel::Update(float dt)
+{
+	wheelSpin += .25 + dt;
 }

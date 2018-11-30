@@ -11,9 +11,6 @@
 #include <FL/math.H>
 #include <FL/glu.h>
 #include "libtarga.h"
-#include "SubDSphere.h"
-
-
 
  // The control points for the track spline.
 const int   Track::TRACK_NUM_CONTROLS = 4;
@@ -75,7 +72,6 @@ Track::Initialize(void)
 	n_refined = refined.N();
 
 	// Create the track 
-
 	// Create the display list for the track - just a set of line segments
 	// We just use curve evaluated at integer paramer values, because the
 	// subdivision has made sure that these are good enough.
@@ -89,36 +85,12 @@ Track::Initialize(void)
 		glVertex3fv(p);
 	}
 	glEnd();
-	//TODO: add rails to track, use texture mapping?
-	// Draw polygon (rail)/*
-	for (i = 0; i <= n_refined; ++i) {
-		float tangent[3];
-		refined.Evaluate_Point((float)i, p);
-		refined.Evaluate_Derivative((float)i, tangent);
-		Normalize_3(tangent);
-		glBegin(GL_TRIANGLES);
-		// triangle 1
-		glVertex3f(p[0] + tangent[0], p[1] - tangent[1], p[2] + 1.0);
-		glVertex3f(p[0] - tangent[0], p[1] - tangent[1], p[2] - 1.0);
-		glVertex3f(p[0] + tangent[0], p[1] + tangent[1], p[2] + 1.0);
-		glColor3f(0.0, 5.0, 0.0);
-		glEnd();
-		glBegin(GL_TRIANGLES);
-		//triangle 2
-		glVertex3f(p[0] - tangent[0], p[1] - tangent[1], p[2] - 1.0);
-		glVertex3f(p[0] + tangent[0], p[1] + tangent[1], p[2] - 1.0);
-		glVertex3f(p[0] + tangent[0], p[1] + tangent[1], p[2] + 1.0);
-		glColor3f(5.0, 0.0, 0.0);
-		glEnd();
-	}
-
 	glEndList();
 
-	// Set up the train. At this point a cube is drawn. NOTE: The
+	// Set up the train. NOTE: The
 	// x-axis will be aligned to point along the track. The origin of the
 	// train is assumed to be at the bottom of the train.
 	// Now do the geometry. Create the display list.
-	bumper.Initialize();
 	// Load the image for the texture. The texture file has to be in
 	// a place where it will be found.
 	if (!(image_data = (ubyte*)tga_load("railFront.tga", &image_width, &image_height, TGA_TRUECOLOR_24)))
@@ -137,8 +109,7 @@ Track::Initialize(void)
 
 	// This sets up the texture with high quality filtering. First it builds
 	// mipmaps from the image data, then it sets the filtering parameters
-	// and the wrapping parameters. We want the grass to be repeated over the
-	// ground.
+	// and the wrapping parameters. 
 	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, image_width, image_height, GL_RGB, GL_UNSIGNED_BYTE, image_data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -158,13 +129,13 @@ Track::Initialize(void)
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture_obj_front);
 	glBegin(GL_QUADS);
-	glTexCoord2f(100.0, 100.0);
 	//Front
 	glNormal3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(1.5f, 0.5f, 0.0f);
-	glVertex3f(1.5f, 0.5f, 1.0f);
-	glVertex3f(1.5f, -0.5f, 1.0f);
-	glVertex3f(1.5f, -0.5f, 0.0f);
+	glTexCoord2f(0.0, 0.0); glVertex3f(1.5f, 0.5f, 0.0f);
+	glTexCoord2f(1.0, 0.0); glVertex3f(1.5f, 0.5f, 1.0f);
+	glTexCoord2f(1.0, 1.0); glVertex3f(1.5f, -0.5f, 1.0f);
+	glTexCoord2f(0.0, 1.0); glVertex3f(1.5f, -0.5f, 0.0f);
+	glScalef(M_PI, M_PI, M_PI);
 	
 	//Back
 	glNormal3f(-1.0f, 0.0f, 0.0f);
@@ -172,6 +143,7 @@ Track::Initialize(void)
 	glVertex3f(-1.5f, 0.5f, 0.0f);
 	glVertex3f(-1.5f, -0.5f, 0.0f);
 	glVertex3f(-1.5f, -0.5f, 1.0f);
+	glScalef(M_PI, M_PI, M_PI);
 	glEnd();
 	
 	//Load top texture
@@ -204,12 +176,12 @@ Track::Initialize(void)
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	//Up
 	glBegin(GL_QUADS);
-	glTexCoord2f(100.0, 100.0);
 	glNormal3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(1.5f, 0.5f, 1.0f);
-	glVertex3f(-1.5f, 0.5f, 1.0f);
-	glVertex3f(-1.5f, -0.5f, 1.0f);
-	glVertex3f(1.5f, -0.5f, 1.0f);
+	glTexCoord2f(0.0, 0.0); glVertex3f(1.5f, 0.5f, 1.0f);
+	glTexCoord2f(1.0, 0.0); glVertex3f(-1.5f, 0.5f, 1.0f);
+	glTexCoord2f(1.0, 1.0); glVertex3f(-1.5f, -0.5f, 1.0f);
+	glTexCoord2f(0.0, 1.0); glVertex3f(1.5f, -0.5f, 1.0f);
+	glScalef(M_PI, M_PI, M_PI);
 	glEnd();
 	//Load side texture
 	if (!(image_data = (ubyte*)tga_load("railSide.tga", &image_width, &image_height, TGA_TRUECOLOR_24)))
@@ -240,35 +212,31 @@ Track::Initialize(void)
 	// texture by the underlying color.
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glBegin(GL_QUADS);
-	glTexCoord2f(100.0, 100.0);
 	//Down
 	glNormal3f(0.0f, 0.0f, -1.0f);
 	glVertex3f(1.5f, -0.5f, 0.0f);
 	glVertex3f(-1.5f, -0.5f, 0.0f);
 	glVertex3f(-1.5f, 0.5f, 0.0f);
 	glVertex3f(1.5f, 0.5f, 0.0f);
+	glScalef(M_PI, M_PI, M_PI);
 	//Right
-	glTexCoord2f(100.0, 100.0);
 	glNormal3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(1.5f, 0.5f, 1.0f);
-	glVertex3f(1.5f, 0.5f, 0.0f);
-	glVertex3f(-1.5f, 0.5f, 0.0f);
-	glVertex3f(-1.5f, 0.5f, 1.0f);
+	glTexCoord2f(0.0, 0.0); glVertex3f(1.5f, 0.5f, 1.0f);
+	glTexCoord2f(1.0, 0.0); glVertex3f(1.5f, 0.5f, 0.0f);
+	glTexCoord2f(1.0, 1.0); glVertex3f(-1.5f, 0.5f, 0.0f);
+	glTexCoord2f(0.0, 1.0); glVertex3f(-1.5f, 0.5f, 1.0f);
+	glScalef(M_PI, M_PI, M_PI);
 	//Left
-	glTexCoord2f(100.0, 100.0);
 	glNormal3f(0.0f, -1.0f, 0.0f);
-	glVertex3f(1.5f, -0.5f, 0.0f);
-	glVertex3f(1.5f, -0.5f, 1.0f);
-	glVertex3f(-1.5f, -0.5f, 1.0f);
-	glVertex3f(-1.5f, -0.5f, 0.0f);
+	glTexCoord2f(0.0, 0.0); glVertex3f(1.5f, -0.5f, 0.0f);
+	glTexCoord2f(-1.0, 0.0); glVertex3f(1.5f, -0.5f, 1.0f);
+	glTexCoord2f(-1.0, -1.0); glVertex3f(-1.5f, -0.5f, 1.0f);
+	glTexCoord2f(0.0, -1.0); glVertex3f(-1.5f, -0.5f, 0.0f);
+	glScalef(M_PI, M_PI, M_PI);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
-	//Attach bumper?
-	GLfloat posn[3];
-	posn[0] = 1.5f;
-	posn[1] = posn[2] = 0.0f;
-	bumper.Draw(posn);
 	glEndList();
+	
 
 	initialized = true;
 
@@ -299,7 +267,7 @@ Track::Draw(void)
 
 	// Translate the train to the point
 	glTranslatef(posn[0], posn[1], posn[2]);
-
+	
 	// ...and what it's orientation is
 	track->Evaluate_Derivative(posn_on_track, tangent);
 	Normalize_3(tangent);
@@ -317,7 +285,6 @@ Track::Draw(void)
 
 	glPopMatrix();
 	glPopMatrix();
-
 }
 
 
@@ -369,7 +336,7 @@ Track::Ride() {
 	float trainPosn[3];
 	double cameraLookAt[3];
 	float   tangent[3];
-
+	
 	// Figure out where the train is
 	track->Evaluate_Point(posn_on_track, trainPosn);
 
@@ -379,12 +346,16 @@ Track::Ride() {
 	// Put the camera at the right place
 	cameraPosn[0] = trainPosn[0];
 	cameraPosn[1] = trainPosn[1];
-	cameraPosn[2] = trainPosn[2] + 2.5;
+	cameraPosn[2] = trainPosn[2] + 2;
 
 	// Look at the right place. (next point on track + up a little bit)
 	cameraLookAt[0] = trainPosn[0] + tangent[0];
 	cameraLookAt[1] = trainPosn[1] + tangent[1];
-	cameraLookAt[2] = trainPosn[2] + tangent[2];
+	cameraLookAt[2] = trainPosn[2];
+	if (tangent[2] > trainPosn[2])
+		cameraLookAt[2] += tangent[2];
+	else
+		cameraLookAt[2] += 0.8 * tangent[2];
 
 	// Update camera
 	glMatrixMode(GL_MODELVIEW);

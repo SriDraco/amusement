@@ -75,19 +75,15 @@ Ground::Initialize(void)
 
 	// Draw the ground as a quadrilateral, specifying texture coordinates.
 	glBegin(GL_QUADS);
-	    glTexCoord2f(100.0, 100.0);
-	    glVertex3f(50.0, 50.0, 0.0);
-	    glTexCoord2f(-100.0, 100.0);
-	    glVertex3f(-50.0, 50.0, 0.0);
-	    glTexCoord2f(-100.0, -100.0);
-	    glVertex3f(-50.0, -50.0, 0.0);
-	    glTexCoord2f(100.0, -100.0);
-	    glVertex3f(50.0, -50.0, 0.0);
+	    glTexCoord2f(100.0, 100.0);		glVertex3f(50.0, 50.0, 0.0);
+	    glTexCoord2f(-100.0, 100.0);	glVertex3f(-50.0, 50.0, 0.0);
+	    glTexCoord2f(-100.0, -100.0);	glVertex3f(-50.0, -50.0, 0.0);
+	    glTexCoord2f(100.0, -100.0);	glVertex3f(50.0, -50.0, 0.0);
 	glEnd();
 
 	// Draw fence around entire park
 	glBegin(GL_POLYGON);
-
+		
 	glEnd();
 
 	// Turn texturing off again, because we don't want everything else to

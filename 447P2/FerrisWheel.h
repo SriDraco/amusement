@@ -16,4 +16,5 @@ private:
 public:
 	bool Initialize(void);
 	void Draw(void);
+	void Update(float dt);
 };

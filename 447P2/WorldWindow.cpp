@@ -29,9 +29,14 @@ WorldWindow::WorldWindow(int x, int y, int width, int height, char *label)
 	x_at = 0.0f;
 	y_at = 0.0f;
 	
-	// We don't start riding, or with smooth subdiv.
+	// We don't start with any meta variables true.
 	riding = false;
 	smooth = false;
+	corner1 = false;
+	corner2 = false;
+	corner3 = false;
+	corner4 = false;
+	wheelView = false;
 }
 
 
@@ -92,8 +97,9 @@ WorldWindow::draw(void)
 		// Initialize all the objects.
 		ground.Initialize();
 		traintrack.Initialize();
-		sphere.Initialize();
-		building.Initialize();
+		for (int i = 0; i < 4; i++) {
+			building[i].Initialize(i);
+		}
 		FWheel.Initialize();
 	}
 
@@ -106,11 +112,57 @@ WorldWindow::draw(void)
 	// Set up the viewing transformation. The viewer is at a distance
 	// dist from (x_at, y_ay, 2.0) in the direction (theta, phi) defined
 	// by two angles. They are looking at (x_at, y_ay, 2.0) and z is up.
-	// Follow the cart from ~1z above if riding
+	int corner = 45;
+	// Ride the cart if riding
 	if (riding) {
 		traintrack.Ride();
 	}
-	// Not riding the cart, use default
+	// View corner 1 building
+	else if (corner1) {
+		eye[0] = corner + dist * cos(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
+		eye[1] = y_at + dist * sin(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
+		eye[2] = 2.0 + dist * sin(phi * M_PI / 180.0);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(eye[0], eye[1], eye[2], corner, -corner, 2.0, 0.0, 0.0, 1.0);
+	}
+	// View corner 2 building
+	else if (corner2) {
+		eye[0] = x_at + dist * cos(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
+		eye[1] = y_at + dist * sin(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
+		eye[2] = 2.0 + dist * sin(phi * M_PI / 180.0);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(eye[0], eye[1], eye[2], -corner, -corner, 2.0, 0.0, 0.0, 1.0);
+	}
+	// View corner 3 building
+	else if (corner3) {
+		eye[0] = x_at + dist * cos(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
+		eye[1] = corner + dist * sin(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
+		eye[2] = 2.0 + dist * sin(phi * M_PI / 180.0);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(eye[0], eye[1], eye[2], -corner, corner, 2.0, 0.0, 0.0, 1.0);
+	}
+	// View corner 4 building
+	else if (corner4) {
+		eye[0] = corner + dist * cos(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
+		eye[1] = corner + dist * sin(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
+		eye[2] = 2.0 + dist * sin(phi * M_PI / 180.0);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(eye[0], eye[1], eye[2], corner, corner, 2.0, 0.0, 0.0, 1.0);
+	}
+	// View the ferris wheel
+	else if (wheelView) {
+		eye[0] = dist * cos(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
+		eye[1] = dist * sin(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
+		eye[2] = 2.0 + dist * sin(phi * M_PI / 180.0);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(eye[0], eye[1], eye[2], 0, 0, 2.0, 0.0, 0.0, 1.0);
+	}
+	// Not using any special viewpoint, use default
 	else {
 		eye[0] = x_at + dist * cos(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
 		eye[1] = y_at + dist * sin(theta * M_PI / 180.0) * cos(phi * M_PI / 180.0);
@@ -128,15 +180,10 @@ WorldWindow::draw(void)
 	// Draw stuff. Everything.
 	ground.Draw();
 	traintrack.Draw();
-	building.Draw();
+	for (int i = 0; i < 4; i++) {
+		building[i].Draw(smooth, i);
+	}
 	FWheel.Draw();
-	// Build sphere args
-	GLfloat defaultTrans[3], defaultRot[3] = { 0 }, defaultAngle = 0.0f;
-	defaultTrans[0] = 5.5f;
-	defaultTrans[1] = 5.0f;
-	defaultTrans[2] = 1.0f;
-
-	sphere.Draw(defaultTrans, defaultRot, defaultAngle, smooth);
 }
 
 
@@ -198,8 +245,9 @@ WorldWindow::Update(float dt)
 	if (button != -1) // Only do anything if the mouse button is down.
 		Drag(dt);
 
-	// Animate the train.
+	// Animate the train and wheel
 	traintrack.Update(dt);
+	FWheel.Update(dt);
 
 	return true;
 }
@@ -208,7 +256,7 @@ WorldWindow::Update(float dt)
 int
 WorldWindow::handle(int event)
 {
-	// Event handling routine. Only looks at mouse events.
+	// Event handling routine.
 	// Stores a bunch of values when the mouse goes down and keeps track
 	// of where the mouse is and what mouse button is down, if any.
 	switch (event)
@@ -230,26 +278,12 @@ WorldWindow::handle(int event)
 	case FL_RELEASE:
 		button = -1;
 		return 1;
-	case FL_Up: {
-		// Up arrow moves the look-at point 'forward'
-		//TODO figure out the code above, and apply it to keyboard navigation
-		//TODO ask if want to add keyboard shortcuts for important parts of the projects (demo)
-	}break;
-	case FL_Down: {
-		// Down arrow moves the look-at point 'back'
-
-	}break;
-	case FL_Left: {
-		// Left arrow moves the look-at point right, strafing (world 'moves' left)
-	}break;
-	case FL_Right: {
-		// Right arrow moves the look-at point left, strafing
-	}break;
-	
 	case FL_KEYBOARD:
 		if (Fl::event_key() == 's')
 		{
-			sphere.Subdivide(1);
+			for (int i = 0; i < 4; i++) {
+				building[i].smoothRoof(1);
+			}
 			redraw();
 			return 1;
 		}
@@ -264,6 +298,36 @@ WorldWindow::handle(int event)
 		if (Fl::event_key() == 'r')
 		{
 			riding = !riding;
+			redraw();
+			return 1;
+		}
+		if (Fl::event_key() == 'z') {
+			corner1 = !corner1;
+			corner2 = corner3 = corner4 = riding = wheelView = false;
+			redraw();
+			return 1;
+		}
+		if (Fl::event_key() == 'x') {
+			corner2 = !corner2;
+			corner1 = corner3 = corner4 = riding = wheelView = false;
+			redraw();
+			return 1;
+		}
+		if (Fl::event_key() == 'c') {
+			corner3 = !corner3;
+			corner1 = corner2 = corner4 = riding = wheelView = false;
+			redraw();
+			return 1;
+		}
+		if (Fl::event_key() == 'v') {
+			corner4 = !corner4;
+			corner1 = corner2 = corner3 = riding = wheelView = false;
+			redraw();
+			return 1;
+		}
+		if (Fl::event_key() == 'w') {
+			wheelView = !wheelView;
+			corner1 = corner2 = corner3 = corner4 = riding = false;
 			redraw();
 			return 1;
 		}

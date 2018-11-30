@@ -16,8 +16,8 @@
 #include "Ground.h"
 #include "Track.h"
 #include "Buildings.h"
-#include "SubDSphere.h"
 #include "FerrisWheel.h"
+
 
 // Subclass the Fl_Gl_Window because we want to draw OpenGL in here.
 class WorldWindow : public Fl_Gl_Window {
@@ -37,14 +37,22 @@ public:
 	bool	Update(float);
 
 private:
+	// Objects in the world
 	Ground		ground;		// The ground object.
 	Track		traintrack;	// The train and track.
-	bool		riding;		// Are you riding the train?
-	Buildings	building;	// The buildings in the world
-	SubDSphere	sphere;		// Subdivided sphere (from site example)
-	bool		smooth;		// Is the sphere smooth?
+	Buildings	building[4];// The buildings in the world
 	FerrisWheel FWheel;		// Ferris Wheel
 
+	// Object Meta variables
+	bool		riding;		// Are you riding the train?
+	bool		smooth;		// Are the subdivions smooth?
+	bool		corner1;	// Looking at building 1
+	bool		corner2;	// Looking at building 2
+	bool		corner3;	// Looking at building 3
+	bool		corner4;	// Looking at building 4
+	bool		wheelView;	// Looking at wheel
+
+	// Viewer Variables
 	static const double FOV_X; // The horizontal field of view.
 
 	float	phi;	// Viewer's inclination angle.
@@ -66,6 +74,7 @@ private:
 	float	x_at_down;  // The x-coord to look at when the mouse went down.
 	float	y_at_down;  // The y-coord to look at when the mouse went down.
 
+	// Mouse function
 	void	Drag(float);	// The function to call for mouse drag events
 };
 
